@@ -103,25 +103,73 @@ dataStructures.forEach(TargetDS => {
     });
 
     describe('delete', () => {
-      it('returns the value for the removed record', () => {
+      // it('is able to delete the root', () => {
+      //   bst.insert('test', "valueToBeDeleted");
+      //   expect(bst.delete('test')).toBe('valueToBeDeleted');
+      // });
 
-      });
+      // it('returns the value for the removed record', () => {
+      //   bst.insert('aKey', "testValueA");
+      //   bst.insert('cKey', "testValueC");
+      //   bst.insert('jKey', "testValueJ");
+      //   bst.insert('bKey', "testValueB");
+      //   expect(bst.delete('aKey')).toBe("testValueA");
+      // });
 
-      it('returns undefined if the record was not found', () => {
 
-      });
+      // it('returns undefined if the record was not found', () => {
+      //   bst.insert('aKey', "testValueA");
+      //   bst.insert('bKey', "testValueB");
+      //   bst.insert('cKey', "testValueC");
+      //   expect(bst.delete('non_existant_value')).toBe(undefined);
+
+      // });
 
       it('reduces the count by 1', () => {
+        expect(bst.count()).toBe(0);
+        bst.insert('z', 'zValue');
+        expect(bst.count()).toBe(1);
 
+        const keys = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+        keys.forEach((key, i) => {
+          bst.insert(key, `${key}_${i}`); // add a bunch of random key/value pairs
+        });
+        console.log(`COUNT BEFORE DELETE: ${bst.count()}`)
+        console.log(`BST BEFORE DELETE:`)
+        bst.forEach((node) => {
+          console.log(`node: ${node.key}`)
+        })
+  
+        bst.delete(`d`)
+        let count = 0;
+        bst.forEach((node) => {
+          count++;
+        })
+        console.log(`ACTUAL COUNT AFTER DELETE: ${count} vs BST's Count: ${bst.count()}`)
+        expect(bst.count()).toBe(count)
+        bst.delete(`e`);
+        count = 0;
+        bst.forEach((node) => {
+          count++;
+        })
+        console.log(`ACTUAL COUNT AFTER DELETE: ${count} vs BST's Count: ${bst.count()}`)
+        expect(bst.count()).toBe(count)
       });
 
-      it('omits the removed record from iteration results', () => {
+      // it('omits the removed record from iteration results', () => {
 
-      });
+      // });
 
-      it('can remove every element in a tree', () => {
-
-      });
+      // it('can remove every element in a tree', () => {
+      //   const keys = ['many', 'keys', 'for', 'this', 'tree'];
+      //   keys.forEach((key, i) => {
+      //     bst.insert(key, `${key}_${i}`); // add a bunch of random key/value pairs (the value is just "<key>_<index of the key>")
+      //   });
+      //   keys.forEach((key, i) => {
+      //     bst.delete(`${key}_${i}`) // delete each of the values
+      //   })
+      //   expect(bst.count()).toBe(0); // after deleting all the values, the tree should be empty
+      // });
 
       describe('scenarios', () => {
         // The first step for each of these tests will be to construct
