@@ -201,9 +201,8 @@ class BinarySearchTree {
     // all other tree states - begin the recursive delete starting with the root (searches for key, may find it or not)
     let deleteSuccess = this._root.deleteByKey(key); // returns either undefined (the key is not in the tree) or the value of the deleted node
     if(deleteSuccess) { this._count--; } // the key was found and deleted, so we should decrement the count
-    console.log(`BST AFTER DELETING ${key}`)
     this.forEach((node) => {
-      console.log(`node: ${node.key}`)
+      // console.log(`node: ${node.key}`)
     })
     return deleteSuccess; // return the value of the node with the deleted key
   }

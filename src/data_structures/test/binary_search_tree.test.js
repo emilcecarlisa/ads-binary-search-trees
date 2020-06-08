@@ -138,25 +138,25 @@ dataStructures.forEach(TargetDS => {
         keys.forEach((key, i) => {
           bst.insert(key, `${key}_${i}`); // add a bunch of random key/value pairs
         });
-        console.log(`COUNT BEFORE DELETE: ${bst.count()}`)
-        console.log(`BST BEFORE DELETE:`)
-        bst.forEach((node) => {
-          console.log(`node: ${node.key}`)
-        })
+        // console.log(`COUNT BEFORE DELETE: ${bst.count()}`)
+        // console.log(`BST BEFORE DELETE:`)
+        // bst.forEach((node) => {
+        //   console.log(`node: ${node.key}`)
+        // })
   
         bst.delete(`d`)
         let count = 0;
         bst.forEach((node) => {
           count++;
         })
-        console.log(`ACTUAL COUNT AFTER DELETE: ${count} vs BST's Count: ${bst.count()}`)
+        // console.log(`ACTUAL COUNT AFTER DELETE: ${count} vs BST's Count: ${bst.count()}`)
         expect(bst.count()).toBe(count)
         bst.delete(`e`);
         count = 0;
         bst.forEach((node) => {
           count++;
         })
-        console.log(`ACTUAL COUNT AFTER DELETE: ${count} vs BST's Count: ${bst.count()}`)
+        // console.log(`ACTUAL COUNT AFTER DELETE: ${count} vs BST's Count: ${bst.count()}`)
         expect(bst.count()).toBe(count)
       });
 
