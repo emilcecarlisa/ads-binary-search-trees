@@ -52,10 +52,9 @@ export class RBTNode {
   }
 
   directionFromParent() {
-    if(this.parent == RBTNode.sentinel) { return undefined }
+    if(this.parent === RBTNode.sentinel) { return undefined } //root
     return (this.key < this.parent.key) ? "left" : "right";
   }
-
 
 }
 
@@ -108,8 +107,6 @@ class RedBlackTree {
     child.left = node;
     node.parent = child;
 
-    // LOOK AT ME
-    // I'M THE PARENT NOW
   }
 
   _rotateRight(node) {
@@ -162,109 +159,81 @@ class RedBlackTree {
     if(successfulInsert) this._count++;
     return successfulInsert;
   }
-
   _insertRebalance(node) {
-    // does not actually insert a node - REBALANCES node after insert
+    
     console.log(`Starting insertRebalance`);
     console.log(`Looks like:`)
     this.forEach((node) => {
-      if(node === RBTNode.sentinel) { console.log(`This is the sentinel node`) } else {
+      if(!node.key) { console.log(`This is the sentinel node`) } else {
         console.log(`What is node: ${JSON.stringify(node)}`)
         console.log(`Node: ${node.key} is currently ${node.color}`)  
-        // Make root to always be black.
-        node.color = RBTNode.BLACK; 
       }
     })
 
     let parent = node.parent;
     let uncleResponse = node.uncle();
+    let grandparent = parent.parent;
 
-    if(uncleResponse && uncleResponse.direction === "left") {
-      if(uncleResponse.uncle.color === RBTNode.RED) { // uncle is red
-        // Generation above node turns black
-        uncleResponse.uncle.color = RBTNode.BLACK;
-        parent.color = RBTNode.BLACK;
-        // grandparent becomes red
-        if(parent.parent) {
-          parent.parent.color = RBTNode.RED
-          this._insertRebalance(parent.parent)
-        }
-      } else { // uncle is black
-        if(node.directionFromParent() === "right") { // SCENARIO 2
-          this._rotateLeft(parent);
-        } else if (node.directionFromParent() === "left"){ // SCENARIO 1
-          const grandparentColor = parent.parent.color;
-          const parentColor = parent.color;
-          parent.parent.color = parentColor;
-          parent.color = grandparentColor;
-          this._rotateRight(parent)
-          this._rotateLeft(parent.parent)
-        }
+    if(uncleResponse && uncleResponse.color === RBTNode.RED) {
+      // If node has red uncle then we need to do RECOLORING.
+      uncleResponse.uncle.color = RBTNode.BLACK;
+      parent.color = RBTNode.BLACK;
+
+      if (grandparent && grandparent.key === this._root.key) {
+        // Recolor grand-parent to red if it is not root.
+          grandparent.color = RBTNode.RED
+          this._insertRebalance(grandparent)
+      } else {
+        // If grand-parent is black root don't do anything.
+        // Since root already has two black sibling that we've just recolored.
+        return;
       }
-    } else if(uncleResponse && uncleResponse.direction === "right") { // parent is left child
-      if(uncleResponse.uncle.color === RBTNode.RED) { // uncle is red
-        // Generation above node turns black
-        uncleResponse.uncle.color = RBTNode.BLACK;
-        parent.color = RBTNode.BLACK;
-        // grandparent becomes red
-        if(parent.parent) {
-          parent.parent.color = RBTNode.RED
-          this._insertRebalance(parent.parent)
-        }
-        this._root.color = RBTNode.BLACK;      
-      } else{
-        if(node.directionFromParent() === "right") { // SCENARIO 4
-          const grandparentColor = parent.parent.color;
-          const parentColor = parent.color;
-          parent.parent.color = parentColor;
-          parent.color = grandparentColor;
-          this._rotateLeft(parent)
-          this._rotateRight(parent.parent)
-        } else if (node.directionFromParent() === "left"){ // SCENARIO 3
-          this._rotateLeft(parent);
+      // Now do further checking for recolored grand-parent.
+      this._insertRebalance(grandparent);
+    } else if(uncleResponse && uncleResponse.color === RBTNode.BLACK){ 
+      if(node.directionFromParent() === "right" && parent.directionFromParent() === "right") { // SCENARIO 1
+        const grandparentColor = grandparent.color;
+        const parentColor = parent.color;
+        grandparent.color = parentColor;
+        parent.color = grandparentColor;
+        this._rotateLeft(grandparent);
+      } else if (node.directionFromParent() === "left" && parent.directionFromParent() === "right"){ // SCENARIO 2
+        const grandparentColor = grandparent.color;
+        const parentColor = parent.color;
+        grandparent.color = parentColor;
+        parent.color = grandparentColor;
+        this._rotateRight(parent);
+        this._rotateLeft(grandparent);
+      } else if (node.directionFromParent() === "right" && parent.directionFromParent() === "left") {
+        const grandparentColor = grandparent.color;
+        const parentColor = parent.color;
+        grandparent.color = parentColor;
+        parent.color = grandparentColor;
+        this._rotateLeft(parent);
+        this._rotateRight(grandparent);
+      } else if (node.directionFromParent() === "left" && parent.directionFromParent() === "left") {
+        const grandparentColor = grandparent.color;
+        const parentColor = parent.color;
+        grandparent.color = parentColor;
+        parent.color = grandparentColor;
+        this._rotateRight(grandparent);
+      }
+      if (node.parent.parent && node.parent.parent.key) {
+        this._insertRebalance(node.parent.parent); 
+      } else {
+        if(node.parent) {
+          this._root = node.parent;
+          node.parent.color = RBTNode.BLACK;
+
         }
       }
     } else {
-      // i have no uncle - I am the root.
-      this._root.color = RBTNode.BLACK;
+      // I HAVE NO UNCLE - I am the root
+      node.color = RBTNode.BLACK;
+      return;
     }
     console.log(`Finished insertRebalance`);
     console.log(`Looks like:`)
-    this.forEach((node) => {
-      console.log(`Node: ${node.key} is currently ${node.color}`)
-    })
-
-    /*
-    Which side is Uncle on:
-      Left
-        Uncle is Red
-          Node is Right Child
-            set uncle and parent to black
-            set grandparent to red
-            node = grandparent
-            contine rebalance from grandparent
-          Node is Left Child
-        Uncle is Black
-          Node is Right Child
-            parent = node
-            node = node.parent
-            left rotate node
-          Node is Left Child
-      Right
-        Uncle is Red
-          Node is Right Child
-          Node is Left Child
-        Uncle is Black
-          Node is Right Child
-          Node is Left Child
-
-    */
-    
-    // Straight Line Going Right Unbalanced
-    // '' going left
-    // Left-Uncle is sentinel Unbalanced
-    // '' going right
-    // The Tree is already balanced
   }
 
   insert(key, value) {
