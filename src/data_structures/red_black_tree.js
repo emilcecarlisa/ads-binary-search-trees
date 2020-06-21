@@ -56,16 +56,37 @@ export class RBTNode {
     return (this.key < this.parent.key) ? "left" : "right";
   }
 
+  search(key) {
+    if(this.left !== RBTNode.sentinel && key < this.key) { this.left.search(key) }
+    else if(this.right !== RBTNode.sentinel && key > this.key) { this.right.search(key) }
+    else {
+      return this.value
+    }
+    return undefined
+  }
+
 }
 
 class RedBlackTree {
   constructor(Node = RBTNode) {
     this.Node = Node;
     this._count = 0;
+    this._root = undefined;
   }
 
   lookup(key) {
-
+    // let node = this._root;
+    if(!this._root) { return undefined }
+    return this._root.search(key)
+    // while (node) {
+    //   if (key < node.key) {
+    //     node = node.left;
+    //   } else if (key > node.key) {
+    //     node = node.right;
+    //   } else if (key === node.key) { // equal
+    //     return true;
+    //   }
+    // }
   }
 
   /**
@@ -161,14 +182,14 @@ class RedBlackTree {
   }
   _insertRebalance(node) {
     
-    console.log(`Starting insertRebalance`);
-    console.log(`Looks like:`)
-    this.forEach((node) => {
-      if(!node.key) { console.log(`This is the sentinel node`) } else {
-        console.log(`What is node: ${JSON.stringify(node)}`)
-        console.log(`Node: ${node.key} is currently ${node.color}`)  
-      }
-    })
+    // console.log(`Starting insertRebalance`);
+    // console.log(`Looks like:`)
+    // this.forEach((node) => {
+    //   if(!node.key) { console.log(`This is the sentinel node`) } else {
+    //     console.log(`What is node: ${JSON.stringify(node)}`)
+    //     console.log(`Node: ${node.key} is currently ${node.color}`)  
+    //   }
+    // })
 
     let parent = node.parent;
     let uncleResponse = node.uncle();
@@ -236,9 +257,9 @@ class RedBlackTree {
     console.log(`Looks like:`)
   }
 
-  insert(key, value) {
+  insert(key, value=true) {
     const node = this._insertInternal(key, value);
-    this._insertRebalance(node);
+    // this._insertRebalance(node);
   }
 
   delete(key) {
@@ -246,7 +267,7 @@ class RedBlackTree {
   }
 
   count() {
-
+    return this._count;
   }
 
   forEach(callback) {
